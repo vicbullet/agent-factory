@@ -1,11 +1,11 @@
 {
-  "name": "openclaw-agent-factory",
-  "description": "Create fully operational OpenClaw AI agents from scratch — guided setup for identity, model auth, Telegram/Slack channels, Cortex v2 memory system, Dream Pipeline, browser automation, and MCP integrations.",
-  "version": "1.0.0",
+  "name": "agent-factory",
+  "description": "Build, migrate, and shape AI agents. Includes 3 skills: create-agent (new OpenClaw agents from scratch), migrate-openclaw-to-claude (move agents from OpenClaw to Claude Code preserving channels and schedules), and claude-soul (give identity, personality, and purpose to any Claude Code agent).",
+  "version": "2.0.0",
   "author": {
     "name": "Victor Araujo",
     "url": "https://github.com/ovictorluiz"
   },
-  "keywords": ["openclaw", "agent", "cortex", "memory", "dream-pipeline", "telegram", "slack"],
+  "keywords": ["agent", "openclaw", "claude-code", "personality", "identity", "telegram", "slack", "migration", "cortex", "memory"],
   "license": "MIT"
 }

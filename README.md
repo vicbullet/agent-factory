@@ -1,28 +1,31 @@
-# OpenClaw Agent Factory
+# Agent Factory
 
-Claude Code plugin for the full OpenClaw agent lifecycle — create new agents from scratch, or migrate existing ones to Claude Code.
+Claude Code plugin for the full AI-agent lifecycle: build new ones, migrate existing ones, and give them real personality.
 
 ## Skills included
 
 ### `create-agent`
-Creates fully operational [OpenClaw](https://openclaw.ai) AI agents from scratch via guided 10-phase setup.
+Creates fully operational [OpenClaw](https://openclaw.ai) AI agents from scratch via guided 10-phase setup. Identity (SOUL/USER/AGENTS), model auth, channels (Telegram + Slack), Cortex v2 memory, Dream Pipeline, MCP integrations, browser automation.
 
 ### `migrate-openclaw-to-claude`
-Migrates an existing OpenClaw agent (remote 24/7 daemon) to Claude Code (local terminal + headless cron via launchd), preserving identity, Telegram bot, Slack bot, and schedules. Same bots, same conversations, same schedule times — different infra.
+Migrates an existing OpenClaw agent (remote 24/7 daemon) to Claude Code (local terminal + headless cron via launchd), **preserving identity, Telegram bot, Slack bot, and schedules**. Same bots, same conversations, same schedule times — different infra. Reversible (OpenClaw config gets disabled, not deleted).
+
+### `claude-soul`
+Gives identity, personality, and purpose to any Claude Code agent in any directory. Guided discovery that produces a `CLAUDE.md` with real character, seeds the native memory system, and creates a bootstrap ritual. Output is not a generic assistant — it's an agent with a name, opinions, tone, and boundaries.
 
 ---
 
 ## Install
 
-```bash
-claude plugin marketplace add vicbullet/openclaw-agent-factory
-claude plugin install openclaw-agent-factory
+```
+/plugin marketplace add vicbullet/agent-factory
+/plugin install agent-factory
 ```
 
 Or manually:
 
 ```bash
-git clone https://github.com/vicbullet/openclaw-agent-factory.git ~/.claude/plugins/openclaw-agent-factory
+git clone https://github.com/vicbullet/agent-factory.git ~/.claude/plugins/agent-factory
 ```
 
 ---
@@ -32,113 +35,96 @@ git clone https://github.com/vicbullet/openclaw-agent-factory.git ~/.claude/plug
 ### Create a new OpenClaw agent
 
 ```
-/openclaw-agent-factory:create-agent
+/agent-factory:create-agent
 ```
 
 Or with an agent name:
 
 ```
-/openclaw-agent-factory:create-agent archie
+/agent-factory:create-agent archie
 ```
 
-Guides you interactively through all phases:
-
-- **Identity** — SOUL.md, USER.md, IDENTITY.md, AGENTS.md (personality, capabilities, rules)
-- **Model Auth** — API key configuration for OpenAI, Anthropic, Google, etc.
-- **Channels** — Telegram (allowlist) and Slack (pairing) with routing bindings
-- **Cortex v2 Memory** — Persistent structured memory with topic files, scoring, and hybrid search
-- **Dream Pipeline** — Nightly 12-step consolidation of conversations into long-term memory
-- **Self-Improving** — Automatic capture of errors, corrections, and feature requests
-- **MCP Integrations** — npm packages + custom MCP servers for any API
-- **Browser Automation** — Xvfb + Chromium for web UI operations the API doesn't support
+Guides you interactively through all phases.
 
 ### Migrate an OpenClaw agent to Claude Code
 
 ```
-/openclaw-agent-factory:migrate-openclaw-to-claude
+/agent-factory:migrate-openclaw-to-claude
 ```
 
-Or just describe the intent: "migrate `<agent>` from OpenClaw to Claude Code", "I want to pull `<agent>` off the server", etc.
-
-Walks through 8 phases:
+Or describe the intent in natural language ("migrate `<agent>` from OpenClaw to Claude Code", "I want to pull `<agent>` off the server", "perdi os crons do OpenClaw") and the skill auto-triggers. Walks through 8 phases:
 
 1. **Discovery / Inventory** — find canonical files, current OpenClaw state, tokens
-2. **Architecture decisions** — where the agent lives, vault isolation, channel reuse, cron strategy
+2. **Architecture decisions** — directory layout, vault isolation, channel reuse, cron strategy
 3. **Build agent home** — `CLAUDE.md` orchestrator, `BOOTSTRAP.md`, `memory/` daily logs
 4. **Launch alias** — `~/.zshrc` shell alias with channel flags
-5. **Telegram migration** — same bot, same conversation, manual access.json workaround for the `/telegram:access` bug
+5. **Telegram migration** — same bot, same conversation, manual `access.json` workaround for the `/telegram:access` bug
 6. **Slack migration** — same bot identity for outbound DMs/posts (one-way; inbound stays on Telegram)
 7. **Cron jobs** — `launchd` plists with shared task runner; preserves all heartbeat schedules
 8. **Validation + OpenClaw shutdown** — reversible disable on the server (config backup + workspace preserved)
 
-Preserves:
+### Give a Claude Code agent personality
 
-- ✅ Identity (`SOUL.md`, `USER.md`, `AGENTS.md`, `MEMORY.md`, `HEARTBEAT.md` canonical files)
-- ✅ Telegram channel (same bot token → same `@username` → same conversation history)
-- ✅ Slack outbound (same bot identity in the workspace)
-- ✅ Schedules (heartbeat + scheduled tasks at the same local times)
-- ✅ Daily logs (`memory/YYYY-MM-DD.md` append-only kept)
-- 🛡️ Vault multi-agent isolation (no identity leak across subfolders)
-- 🔄 Reversible OpenClaw shutdown (config disabled, not deleted)
+```
+/agent-factory:claude-soul
+```
+
+Or trigger naturally: "I want my Claude to have personality", "set up a new agent", "dar vida a um agente". Six-phase guided discovery:
+
+0. Understand the request and target directory
+1. Who is the user? (deep profile that shapes how the agent serves)
+2. Who is the agent? (identity + soul + Molty refinement for non-corporate voice)
+3. Confirm operational rules (sensible defaults, tweakable)
+4. Build files: `CLAUDE.md`, `BOOTSTRAP.md`, native memory seed
+5. Telegram setup (mandatory — reachable from phone)
+6. First contact — agent reads BOOTSTRAP.md and introduces itself in its own voice
+
+Output is a CLAUDE.md you'd actually want to talk to at 2am, not a generic chatbot.
 
 ---
 
 ## Prerequisites
 
-### For `create-agent`
-
+### `create-agent`
 - Linux server with [OpenClaw](https://openclaw.ai) installed
 - Claude Code CLI
 - Model API key (OpenAI, Anthropic, etc.)
 - Telegram bot token and/or Slack app tokens (for channels)
 
-### For `migrate-openclaw-to-claude`
-
-- macOS (the skill uses `launchd`; on Linux you'd swap for `systemd timers` — same idea, different syntax)
+### `migrate-openclaw-to-claude`
+- macOS (uses `launchd`; on Linux substitute `systemd timers`)
+- Homebrew (`brew install oven-sh/bun/bun` is required — Telegram plugin needs Bun)
 - SSH/cloudflared access to the OpenClaw server (to inventory state and shut down cleanly)
-- Homebrew (`brew install oven-sh/bun/bun` is required — the Telegram plugin needs Bun runtime)
+- Tokens for Telegram bot and Slack bot (recovered during the discovery phase)
 - Claude Code CLI logged in
-- Tokens for Telegram bot and Slack bot (recovered during the migration's discovery phase)
+
+### `claude-soul`
+- Claude Code CLI logged in
+- Telegram plugin installed (`/plugin install telegram@claude-plugins-official`) — Phase 5 sets up reachability
+- Bun (`brew install oven-sh/bun/bun`) — required by the Telegram plugin
 
 ---
 
 ## What's inside
 
 ### `create-agent`
-
-Encodes lessons learned from building production OpenClaw agents:
-
-- 15 critical rules from real setup failures
-- Correct `auth-profiles.json` format (common gotcha: `key` not `apiKey`, `type` not `mode`)
-- Telegram allowlist trap (empty `allowFrom` = silent message drop)
-- Heartbeat per-agent override (adding to one agent silently disables others)
-- Dream cron timezone requirement (without explicit tz, runs in UTC)
-- Browser automation stack (Xvfb + headed Chromium + cdpUrl — headless fails for SPAs)
-- MCP env var names (always check README — APIs vary)
-- API silent field acceptance (some APIs return "success" but don't persist unknown fields)
+Encodes 15 critical rules from real OpenClaw setup failures: `auth-profiles.json` format gotchas, Telegram allowlist trap, heartbeat per-agent override, Dream cron timezone requirement, browser automation stack (Xvfb + headed Chromium), MCP env var conventions, API silent field acceptance.
 
 ### `migrate-openclaw-to-claude`
-
-Encodes lessons learned from a real OpenClaw → Claude Code migration:
-
-- Vault contamination: a parent `.claude/CLAUDE.md` with agent identity leaks to every subdir agent
-- Telegram plugin requires Bun runtime (silent failure mode if missing)
-- `/telegram:access` skill ignores `TELEGRAM_STATE_DIR` (manual `access.json` workaround)
-- `/schedule` remote agents lack Slack/Linear MCPs by default (forces local launchd for full coverage)
-- launchd uses minimal PATH (must export in script)
-- Bot tokens shouldn't go in remote routine prompts (cloud config exposure)
-- Mac dormindo: launchd does NOT replay missed cron fires (heartbeat-style 2h schedules tolerate this; daily 06:02 jobs may silently miss)
-- `claude --print` headless cannot drive a browser — tasks needing Chrome (BUFIN portal, KYC cockpit, etc.) need either `computer-use` API or stay manual
+Encodes lessons from a real OpenClaw → Claude Code migration: vault contamination via parent `.claude/CLAUDE.md`, Bun runtime requirement, `/telegram:access` ignoring `TELEGRAM_STATE_DIR`, `/schedule` remote MCP gaps, launchd PATH minimal, Mac sleep cron skips, headless browser limitations.
 
 7 reference docs ship with the skill:
 
-- `inventory-openclaw.md` — discovery checklist for the OpenClaw side (tokens, processes, schedules)
+- `inventory-openclaw.md` — discovery checklist
 - `vault-isolation.md` — multi-agent vault refactor pattern
-- `telegram-migration.md` — preserve the Telegram bot, including Bun + access.json gotchas
-- `slack-migration.md` — preserve the Slack bot, with a templated `<agent>-slack-dm` outbound CLI
-- `launchd-cron-migration.md` — task runner + plist templates + Mac-asleep caveat
-- `openclaw-shutdown.md` — reversible disable on the server (config backup + workspace preserved)
-- `agent-home-template.md` — boilerplate CLAUDE.md, BOOTSTRAP.md, memory dir
+- `telegram-migration.md` — preserve the bot (Bun + access.json gotchas)
+- `slack-migration.md` — preserve the bot identity, with templated outbound CLI
+- `launchd-cron-migration.md` — task runner + plist templates
+- `openclaw-shutdown.md` — reversible disable
+- `agent-home-template.md` — CLAUDE.md/BOOTSTRAP.md/memory boilerplate
+
+### `claude-soul`
+Built around the **Molty refinement** principle: every soul draft passes 8 rules before the user sees it (have opinions, delete corporate, ban sycophancy, enforce brevity, allow humor, allow pushback, allow swearing when it lands, the "2am test"). Reference docs include shallow-vs-deep user profile examples, default operational rules, the Molty prompt itself, and the Telegram setup guide.
 
 ---
 
